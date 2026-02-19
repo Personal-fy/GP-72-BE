@@ -70,5 +70,36 @@ class Inventory {
         }
         return false;
     }
+    // UPDATE (Update medicine details)
+    function update() {
+        $query = "UPDATE " . $this->table_name . "
+                  SET name = :name,
+                      category = :category,
+                      quantity = :quantity,
+                      reorder_level = :reorder_level,
+                      unit_price = :unit_price
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+
+        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->category = htmlspecialchars(strip_tags($this->category));
+        $this->quantity = htmlspecialchars(strip_tags($this->quantity));
+        $this->reorder_level = htmlspecialchars(strip_tags($this->reorder_level));
+        $this->unit_price = htmlspecialchars(strip_tags($this->unit_price));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":category", $this->category);
+        $stmt->bindParam(":quantity", $this->quantity);
+        $stmt->bindParam(":reorder_level", $this->reorder_level);
+        $stmt->bindParam(":unit_price", $this->unit_price);
+        $stmt->bindParam(":id", $this->id);
+
+        if($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>
