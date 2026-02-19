@@ -17,6 +17,10 @@ $stats['total_patients'] = $stmt->fetchColumn();
 $stmt = $db->query("SELECT COUNT(*) FROM users WHERE role = 'Doctor'");
 $stats['total_doctors'] = $stmt->fetchColumn();
 
+// 2b. Total Users (All roles)
+$stmt = $db->query("SELECT COUNT(*) FROM users");
+$stats['total_users'] = $stmt->fetchColumn();
+
 // 3. Appointments Today
 $stmt = $db->query("SELECT COUNT(*) FROM appointments WHERE DATE(schedule_date) = CURDATE()");
 $stats['appointments_today'] = $stmt->fetchColumn();

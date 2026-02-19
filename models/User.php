@@ -34,10 +34,21 @@ class User {
         $stmt->bindParam(":password", $password_hash);
         $stmt->bindParam(":role", $this->role);
 
-        if($stmt->execute()) {
-            return true;
+        try {
+            if($stmt->execute()) {
+                return true;
+            }
+            return false;
+        } catch (PDOException $e) {
+            // Check for duplicate entry (SQLSTATE 23000)
+            if ($e->getCode() == 23000) {
+                 // Log error or set a specific error message property if needed
+                 // For now returning false will trigger the generic error in register.php
+                 // But ideally register.php should check for username existence first or we return a specific error code.
+                 return false; 
+            }
+            return false;
         }
-        return false;
     }
 
     // Login User

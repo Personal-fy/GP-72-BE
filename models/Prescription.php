@@ -50,11 +50,26 @@ class Prescription {
                   FROM " . $this->table_name . " p
                   LEFT JOIN " . $this->users_table . " u ON p.doctor_id = u.id
                   LEFT JOIN " . $this->inventory_table . " i ON p.inventory_id = i.id
+                  LEFT JOIN patients pat ON p.patient_id = pat.id
                   WHERE p.patient_id = ?
                   ORDER BY p.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $patient_id);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // READ ALL (For Doctor Dashboard)
+    function readAll() {
+        $query = "SELECT p.id, p.dosage, p.status, p.created_at, u.name as doctor_name, i.name as drug_name, pat.name as patient_name
+                  FROM " . $this->table_name . " p
+                  LEFT JOIN " . $this->users_table . " u ON p.doctor_id = u.id
+                  LEFT JOIN " . $this->inventory_table . " i ON p.inventory_id = i.id
+                  LEFT JOIN patients pat ON p.patient_id = pat.id
+                  ORDER BY p.created_at DESC";
+
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
