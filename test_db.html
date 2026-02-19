@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Full Test Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.success {
+            background: #28a745;
+        }
+
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border-left: 4px solid #ccc;
+        }
+
+        .result.success {
+            border-left-color: #28a745;
+            background: #e6ffed;
+        }
+
+        .result.error {
+            border-left-color: #dc3545;
+            background: #ffe6e6;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card full-width">
+            <h2>🚀 System Initialization</h2>
+            <p>If you see "Table not found" errors, run this first.</p>
+            <button class="success" onclick="runSetup()">Run Database Setup (Create Tables)</button>
+            <div id="setupResult" class="result hidden"></div>
+        </div>
+
+        <!-- AUTH SECTION -->
+        <div class="card">
+            <h2>👤 1. User Registration</h2>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="regName" value="Dr. House">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUser" value="house">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPass" value="vicodin">
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select id="regRole">
+                    <option value="Doctor">Doctor</option>
+                    <option value="Pharmacist">Pharmacist</option>
+                </select>
+            </div>
+            <button onclick="register()">Register User</button>
+            <div id="regResult" class="result hidden"></div>
+        </div>
+
+        <div class="card">
+            <h2>🔑 2. User Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUser" value="house">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" value="vicodin">
+            </div>
+            <button class="secondary" onclick="login()">Login</button>
+            <div id="loginResult" class="result hidden"></div>
+            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">*Stores User ID for next steps</p>
+        </div>
+
+        <!-- INVENTORY SECTION -->
+        <div class="card">
+            <h2>💊 3. Add Medicine</h2>
+            <div class="form-group">
+                <label>Medicine Name</label>
+                <input type="text" id="medName" value="Ibuprofen">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" id="medCat" value="Painkiller">
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="medQty" value="100">
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" id="medPrice" value="15.50">
+            </div>
+            <button onclick="addMedicine()">Add to Inventory</button>
+            <div id="medResult" class="result hidden"></div>
+        </div>
+
+        <div class="card">
+            <h2>📋 4. Inventory List</h2>
+            <button class="secondary" onclick="fetchInventory()">Refresh Inventory</button>
+            <div id="invListResult" class="result hidden"></div>
+        </div>
+
+        <!-- PATIENT REGISTRATION SECTION -->
+        <div class="card">
+            <h2>🏥 4a. Register New Patient</h2>
+            <div class="form-group">
+                <label>Patient Name</label>
+                <input type="text" id="patName" value="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="patAge" value="30">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="patGender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="patPhone" value="555-0199">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="patAddress" value="123 Main St">
+            </div>
+            <button onclick="registerPatient()">Register Patient</button>
+            <div id="patRegResult" class="result hidden"></div>
+        </div>
+
+        <!-- DOCTOR SECTION -->
+        <div class="card">
+            <h2>👨‍⚕️ 5. Prescribe Medication</h2>
+            <div class="form-group">
+                <label>Patient ID</label>
+                <input type="number" id="presPatId" value="1">
+            </div>
+            <div class="form-group">
+                <label>Doctor ID (Auto-filled from Login)</label>
+                <input type="number" id="presDocId" readonly placeholder="Login first">
+            </div>
+            <div class="form-group">
+                <label>Medicine ID</label>
+                <input type="number" id="presMedId" placeholder="Check Inventory List">
+            </div>
+            <div class="form-group">
+                <label>Dosage</label>
+                <input type="text" id="presDosage" value="1 tablet every 6 hours">
+            </div>
+            <button onclick="prescribe()">Submit Prescription</button>
+            <div id="presResult" class="result hidden"></div>
+        </div>
+
+        <!-- APPOINTMENTS SECTION -->
+        <div class="card">
+            <h2>📅 7. Manage Appointments (Reception)</h2>
+            <div class="form-group">
+                <label>Patient ID</label>
+                <input type="number" id="apptPatId" value="1">
+            </div>
+            <div class="form-group">
+                <label>Doctor ID</label>
+                <input type="number" id="apptDocId" value="1">
+            </div>
+            <div class="form-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="apptDate">
+            </div>
+            <button onclick="scheduleAppointment()">Schedule Appointment</button>
+            <button class="secondary" onclick="fetchQueue()">View Today's Queue</button>
+            <div id="apptResult" class="result hidden"></div>
+        </div>
+
+        <!-- LABS SECTION -->
+        <div class="card">
+            <h2>🧪 8. Lab Requests (Doctor/Lab Tech)</h2>
+            <div class="form-group">
+                <label>Patient ID</label>
+                <input type="number" id="labPatId" value="1">
+            </div>
+            <div class="form-group">
+                <label>Doctor ID</label>
+                <input type="number" id="labDocId" readonly placeholder="Login first">
+            </div>
+            <div class="form-group">
+                <label>Test Type</label>
+                <select id="labTestType">
+                    <option value="Malaria Parasite">Malaria Parasite</option>
+                    <option value="Widal">Widal</option>
+                    <option value="Full Blood Count">Full Blood Count</option>
+                </select>
+            </div>
+            <button onclick="requestLab()">Order Lab Test</button>
+            <br><br>
+            <button class="secondary" onclick="fetchLabRequests()">View Lab Queue (Tech)</button>
+            <div id="labResult" class="result hidden"></div>
+        </div>
+
+        <!-- ANALYTICS SECTION -->
+        <div class="card">
+            <h2>📊 9. Admin Analytics</h2>
+            <button class="success" onclick="fetchAnalytics()">Load Dashboard Stats</button>
+            <div id="analyticsResult" class="result hidden"></div>
+        </div>
+
+        <!-- PHARMACY/PATIENT SECTION -->
+        <div class="card">
+            <h2>📜 10. Patient History</h2>
+            <div class="form-group">
+                <label>Patient ID</label>
+                <input type="number" id="histPatId" value="1">
+            </div>
+            <button class="secondary" onclick="fetchHistory()">View History</button>
+            <div id="histResult" class="result hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8000/api';
+        let currentUserId = null;
+
+        async function apiCall(endpoint, method, body = null, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = 'Loading...';
+            resultDiv.className = 'result';
+            resultDiv.classList.remove('hidden');
+
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+
+                const res = await fetch(`${API}/${endpoint}`, options);
+                const data = await res.json();
+
+                if (res.ok) {
+                    resultDiv.innerHTML = '✅ ' + JSON.stringify(data, null, 2);
+                    resultDiv.classList.add('success');
+                    return data;
+                } else {
+                    resultDiv.innerHTML = '❌ ' + (data.message || 'Error occurred');
+                    resultDiv.classList.add('error');
+                    return null;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '❌ Network Error: ' + e.message;
+                resultDiv.classList.add('error');
+            }
+        }
+
+        async function runSetup() {
+            await fetch('http://localhost:8000/setup_db.php')
+                .then(res => res.json())
+                .then(data => {
+                    const div = document.getElementById('setupResult');
+                    div.classList.remove('hidden');
+                    div.innerHTML = 'Result: ' + JSON.stringify(data);
+                    if (data.message.includes('success')) div.classList.add('success');
+                });
+        }
+
+        async function register() {
+            await apiCall('auth/register.php', 'POST', {
+                name: document.getElementById('regName').value,
+                username: document.getElementById('regUser').value,
+                password: document.getElementById('regPass').value,
+                role: document.getElementById('regRole').value
+            }, 'regResult');
+        }
+
+        async function login() {
+            const data = await apiCall('auth/login.php', 'POST', {
+                username: document.getElementById('loginUser').value,
+                password: document.getElementById('loginPass').value
+            }, 'loginResult');
+
+            if (data && data.id) {
+                currentUserId = data.id;
+                document.getElementById('presDocId').value = currentUserId;
+                if (document.getElementById('labDocId')) {
+                    document.getElementById('labDocId').value = currentUserId;
+                }
+            }
+        }
+
+        async function addMedicine() {
+            await apiCall('inventory/create.php', 'POST', {
+                name: document.getElementById('medName').value,
+                category: document.getElementById('medCat').value,
+                quantity: document.getElementById('medQty').value,
+                unit_price: document.getElementById('medPrice').value
+            }, 'medResult');
+        }
+
+        async function fetchInventory() {
+            await apiCall('inventory/read.php', 'GET', null, 'invListResult');
+        }
+
+        async function registerPatient() {
+            await apiCall('patients/create.php', 'POST', {
+                name: document.getElementById('patName').value,
+                age: document.getElementById('patAge').value,
+                gender: document.getElementById('patGender').value,
+                phone: document.getElementById('patPhone').value,
+                address: document.getElementById('patAddress').value
+            }, 'patRegResult');
+        }
+
+        async function prescribe() {
+            if (!currentUserId) { alert('Please login first!'); return; }
+            await apiCall('doctors/prescribe.php', 'POST', {
+                patient_id: document.getElementById('presPatId').value,
+                doctor_id: currentUserId,
+                inventory_id: document.getElementById('presMedId').value,
+                dosage: document.getElementById('presDosage').value
+            }, 'presResult');
+        }
+
+        async function scheduleAppointment() {
+            const dateVal = document.getElementById('apptDate').value;
+            // Format to YYYY-MM-DD HH:MM:SS if needed, but standard ISO from input usually works with some tweaking or PHP handles it.
+            // PHP expects YYYY-MM-DD HH:MM:SS usually.
+            const formattedDate = dateVal.replace('T', ' ') + ':00';
+
+            await apiCall('reception/schedule.php', 'POST', {
+                patient_id: document.getElementById('apptPatId').value,
+                doctor_id: document.getElementById('apptDocId').value,
+                schedule_date: formattedDate
+            }, 'apptResult');
+        }
+
+        async function fetchQueue() {
+            await apiCall('reception/queue_status.php', 'GET', null, 'apptResult');
+        }
+
+        async function requestLab() {
+            if (!currentUserId) { alert('Please login first!'); return; }
+            await apiCall('labs/create_request.php', 'POST', {
+                patient_id: document.getElementById('labPatId').value,
+                doctor_id: currentUserId,
+                test_type: document.getElementById('labTestType').value
+            }, 'labResult');
+        }
+
+        async function fetchLabRequests() {
+            await apiCall('labs/read_requests.php', 'GET', null, 'labResult');
+        }
+
+        async function fetchAnalytics() {
+            await apiCall('admin/dashboard_stats.php', 'GET', null, 'analyticsResult');
+        }
+
+        async function fetchHistory() {
+            const id = document.getElementById('histPatId').value;
+            await apiCall(`patients/history.php?id=${id}`, 'GET', null, 'histResult');
+        }
+    </script>
+
+</body>
+
+</html>

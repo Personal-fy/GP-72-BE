@@ -1,0 +1,173 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HMS API",
+    "description": "API documentation for the Hospital Management System Group 72",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "http://localhost/hms_group72/backend",
+      "description": "XAMPP Server"
+    }
+  ],
+  "paths": {
+    "/api/status.php": {
+      "get": {
+        "summary": "Check API Status",
+        "responses": {
+          "200": {
+            "description": "Server and Database are healthy"
+          }
+        }
+      }
+    },
+    "/api/auth/register.php": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string", "enum": ["Doctor", "Pharmacist"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "503": { "description": "User already exists" }
+        }
+      }
+    },
+    "/api/auth/login.php": {
+      "post": {
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/inventory/read.php": {
+      "get": {
+        "summary": "List all medicines",
+        "responses": {
+          "200": { "description": "List of medicines" }
+        }
+      }
+    },
+    "/api/inventory/create.php": {
+      "post": {
+        "summary": "Add new medicine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "category": { "type": "string" },
+                  "quantity": { "type": "integer" },
+                  "unit_price": { "type": "number" },
+                  "reorder_level": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Medicine created" }
+        }
+      }
+    },
+    "/api/inventory/dispense.php": {
+      "post": {
+        "summary": "Dispense medicine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "drug_id": { "type": "integer" },
+                  "quantity": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Stock updated" }
+        }
+      }
+    },
+    "/api/doctors/prescribe.php": {
+      "post": {
+        "summary": "Create prescription",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": { "type": "integer" },
+                  "doctor_id": { "type": "integer" },
+                  "inventory_id": { "type": "integer" },
+                  "dosage": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Prescription created" }
+        }
+      }
+    },
+    "/api/patients/history.php": {
+      "get": {
+        "summary": "Get patient history",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "History records" }
+        }
+      }
+    }
+  }
+}
