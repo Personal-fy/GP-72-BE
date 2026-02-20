@@ -41,6 +41,14 @@ class Patient {
         return false;
     }
 
+    // READ (Get All Patients)
+    function read() {
+        $query = "SELECT * FROM " . $this->table_name . " ORDER BY id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     // READ (Search Patients)
     function search($keywords) {
         $query = "SELECT * FROM " . $this->table_name . " WHERE name LIKE ? OR phone LIKE ?";
