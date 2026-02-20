@@ -33,6 +33,8 @@ if ($method == 'GET') {
             extract($row);
             $appointment_item = array(
                 "id" => $id,
+                "schedule_date" => date("Y-m-d H:i", strtotime($schedule_date)),
+                "date" => date("Y-m-d", strtotime($schedule_date)),
                 "time" => date("H:i", strtotime($schedule_date)), // Format for frontend
                 "patient_name" => $patient_name,
                 "doctor_name" => $doctor_name,

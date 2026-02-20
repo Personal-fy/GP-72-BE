@@ -71,5 +71,12 @@ class User {
         }
         return false;
     }
+    // Fetch all staff users (exclude admins ideally, or just fetch all)
+    function read() {
+        $query = "SELECT id, name, username, role FROM " . $this->table_name . " ORDER BY name ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
 }
 ?>
