@@ -45,7 +45,7 @@ class Appointment {
         // Select appointments where schedule_date is today
         // Also Join with patients table to get patient name
         // Join with users table to get doctor name
-        $query = "SELECT a.id, a.schedule_date, a.status, 
+        $query = "SELECT a.id, a.doctor_id, a.patient_id, a.schedule_date, a.status, 
                          p.name as patient_name, u.name as doctor_name
                   FROM " . $this->table_name . " a
                   LEFT JOIN patients p ON a.patient_id = p.id

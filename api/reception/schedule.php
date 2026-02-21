@@ -27,18 +27,19 @@ if ($method == 'GET') {
 
     if($num > 0) {
         $appointments_arr = array();
-        $appointments_arr = array();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             $appointment_item = array(
                 "id" => $id,
+                "doctor_id" => $row['doctor_id'],
+                "patient_id" => $row['patient_id'],
                 "schedule_date" => date("Y-m-d H:i", strtotime($schedule_date)),
                 "date" => date("Y-m-d", strtotime($schedule_date)),
-                "time" => date("H:i", strtotime($schedule_date)), // Format for frontend
+                "time" => date("H:i", strtotime($schedule_date)),
                 "patient_name" => $patient_name,
                 "doctor_name" => $doctor_name,
-                "type" => "General", // Placeholder as type isn't in DB yet
+                "type" => "General",
                 "status" => $status
             );
             array_push($appointments_arr, $appointment_item);

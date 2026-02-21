@@ -41,9 +41,20 @@ $stats['low_stock_items'] = $stmt->fetchColumn();
 
 // 6. Recent Activities (Limit 5)
 // Union of recent appointments and lab requests could be complex, 
-// for now let's just show recent Logins (if we had a log) or just new patients.
+// 6. Recent Activities
 $stmt = $db->query("SELECT name, created_at FROM patients ORDER BY created_at DESC LIMIT 5");
 $stats['recent_patients'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 7. Total Appointments (all-time)
+$stmt = $db->query("SELECT COUNT(*) FROM appointments");
+$stats['appointments'] = $stmt->fetchColumn();
+
+// 8. Total Revenue (estimated from dispensed prescriptions × unit_price)
+$stmt = $db->query("SELECT COALESCE(SUM(i.unit_price), 0) FROM prescriptions p LEFT JOIN inventory i ON p.inventory_id = i.id WHERE p.status = 'Dispensed'");
+$stats['revenue'] = floatval($stmt->fetchColumn());
+
+// 9. Active Users (staff count as proxy)
+$stats['active_users'] = $stats['total_users'];
 
 http_response_code(200);
 echo json_encode($stats);
